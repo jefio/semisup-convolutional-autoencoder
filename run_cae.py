@@ -7,6 +7,7 @@ import logging
 import json
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from models import get_cae
 from data import get_dataset
@@ -63,18 +64,23 @@ class FitPlot(object):
         plt.savefig(filename)
         plt.close()
 
+    def _plot_loss(self, key_to_losses):
+        filename = os.path.expanduser("~/plot_cae/{}_loss.png".format(
+            self.exp_name))
+        pd.DataFrame(data=key_to_losses).plot()
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.savefig(filename)
+        plt.close()
+
     def run(self):
+        self.model.summary()
         self._plot_model()
         history = self.model.fit_generator(
             self.dataset['train_generator'],
             validation_data=self.dataset['validation_generator'],
-            epochs=2,
-            steps_per_epoch=2,
-            validation_steps=2)
-        filename = os.path.expanduser("~/plot_cae/{}_loss.json".format(
-            self.exp_name))
-        with open(filename, 'w') as fwrite:
-            json.dump(history.history, fwrite)
+            epochs=50)
+        self._plot_loss(history.history)
         self._plot_rec(self.x_train, self.model.predict(self.x_train), True)
         self._plot_rec(self.x_test, self.model.predict(self.x_test), False)
 
