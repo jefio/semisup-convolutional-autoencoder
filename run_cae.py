@@ -20,15 +20,15 @@ np.random.seed(123456)
 
 class FitPlot(object):
     def __init__(self, exp_name, filter_counts, filter_size, downsampling,
-                 sup_weight):
+                 sup_weight, img_side):
         self.exp_name = exp_name
         self.filter_counts = filter_counts
         self.filter_size = filter_size
         self.downsampling = downsampling
         self.sup_weight = sup_weight
 
-        self.img_width = 256
-        self.img_height = 256
+        self.img_width = img_side
+        self.img_height = img_side
         if self.sup_weight > 0:
             class_mode = 'xxy'
         else:
@@ -104,6 +104,7 @@ def main():
     parser.add_argument('-fs', '--filter-size', type=int, nargs='+', default=[3, 3])
     parser.add_argument('-d', '--downsampling', type=int, nargs='+', default=[2, 2, 2])
     parser.add_argument('-s', '--sup-weight', type=float, default=0.)
+    parser.add_argument('-i', '--img-side', type=int, default=256)
     args = parser.parse_args()
 
     filename = os.path.expanduser("~/plot_cae/{}_config.json".format(
@@ -111,7 +112,7 @@ def main():
     with open(filename, 'w') as fwrite:
         json.dump(vars(args), fwrite)
     fp = FitPlot(args.exp_name, args.filter_counts, args.filter_size,
-                 args.downsampling, args.sup_weight)
+                 args.downsampling, args.sup_weight, args.img_side)
     fp.run()
 
 
