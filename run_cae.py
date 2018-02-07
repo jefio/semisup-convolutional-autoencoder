@@ -112,7 +112,7 @@ def main():
     filename = os.path.expanduser("~/plot_cae/{}_config.json".format(
         args.exp_name))
     if os.path.exists(filename):
-        logger.info("filename=%s exists, skipping")
+        logger.info("filename=%s exists, skipping", filename)
     else:
         pathlib.Path(os.path.expanduser("~/plot_cae")).mkdir(exist_ok=True)
         with open(filename, 'w') as fwrite:
