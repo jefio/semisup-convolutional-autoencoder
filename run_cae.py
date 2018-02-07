@@ -5,6 +5,7 @@ import os
 import argparse
 import logging
 import json
+import pathlib
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ from data import get_dataset
 from keras.utils import plot_model
 
 
+logger = logging.getLogger(__name__)
 np.random.seed(123456)
 
 
@@ -109,11 +111,15 @@ def main():
 
     filename = os.path.expanduser("~/plot_cae/{}_config.json".format(
         args.exp_name))
-    with open(filename, 'w') as fwrite:
-        json.dump(vars(args), fwrite)
-    fp = FitPlot(args.exp_name, args.filter_counts, args.filter_size,
-                 args.downsampling, args.sup_weight, args.img_side)
-    fp.run()
+    if os.path.exists(filename):
+        logger.info("filename=%s exists, skipping")
+    else:
+        pathlib.Path(os.path.expanduser("~/plot_cae")).mkdir(exist_ok=True)
+        with open(filename, 'w') as fwrite:
+            json.dump(vars(args), fwrite)
+        fp = FitPlot(args.exp_name, args.filter_counts, args.filter_size,
+                    args.downsampling, args.sup_weight, args.img_side)
+        fp.run()
 
 
 if __name__ == '__main__':
