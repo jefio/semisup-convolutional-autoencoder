@@ -4,7 +4,7 @@ Models
 import logging
 
 from keras.layers import (Input, Conv2D, MaxPooling2D, UpSampling2D, Flatten,
-                          Dense)
+                          Dense, Conv2DTranspose)
 from keras.models import Model
 
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
-            sup_weight=0.):
+            sup_weight=0., transpose=True):
     input_img = Input(shape=(img_width, img_height, 1))
     x = input_img
     for f, d in zip(filter_counts, downsampling):
@@ -22,8 +22,12 @@ def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
     encoded = x
 
     for f, d in zip(filter_counts[::-1], downsampling[::-1]):
-        x = Conv2D(f, filter_size, activation='relu', padding='same')(x)
-        x = UpSampling2D((d, d))(x)
+        if transpose:
+            x = Conv2DTranspose(f, filter_size, strides=(d, d),
+                                activation='relu', padding='same')(x)
+        else:
+            x = Conv2D(f, filter_size, activation='relu', padding='same')(x)
+            x = UpSampling2D((d, d))(x)
     decoded = Conv2D(1, filter_size, activation='sigmoid', padding='same')(x)
 
     z = Flatten()(encoded)
