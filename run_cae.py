@@ -22,7 +22,7 @@ np.random.seed(123456)
 
 class FitPlot(object):
     def __init__(self, exp_name, filter_counts, filter_size, downsampling,
-                 sup_weight, img_side, transpose):
+                 sup_weight, img_side, transpose, sup_layers):
         self.exp_name = exp_name
         self.filter_counts = filter_counts
         self.filter_size = filter_size
@@ -43,7 +43,7 @@ class FitPlot(object):
         self.model = get_cae(self.img_width, self.img_height,
                              self.filter_counts, self.filter_size,
                              self.downsampling, self.sup_weight,
-                             transpose)
+                             transpose, sup_layers)
 
     def _plot_model(self):
         filename = os.path.expanduser("~/plot_cae/{}_model.png".format(
@@ -106,9 +106,10 @@ def main():
     parser.add_argument('-fc', '--filter-counts', type=int, nargs='+', default=[8, 8, 8])
     parser.add_argument('-fs', '--filter-size', type=int, nargs='+', default=[3, 3])
     parser.add_argument('-d', '--downsampling', type=int, nargs='+', default=[2, 2, 2])
-    parser.add_argument('-s', '--sup-weight', type=float, default=0.)
+    parser.add_argument('-sw', '--sup-weight', type=float, default=0.)
     parser.add_argument('-i', '--img-side', type=int, default=256)
     parser.add_argument('-t', '--transpose', type=int, default=0)
+    parser.add_argument('-sl', '--sup-layers', type=int, nargs='+', default=[64])
     args = parser.parse_args()
 
     filename = os.path.expanduser("~/plot_cae/{}_config.json".format(
@@ -121,7 +122,7 @@ def main():
             json.dump(vars(args), fwrite)
         fp = FitPlot(args.exp_name, args.filter_counts, args.filter_size,
                     args.downsampling, args.sup_weight, args.img_side,
-                    args.transpose)
+                    args.transpose, args.sup_layers)
         fp.run()
 
 
