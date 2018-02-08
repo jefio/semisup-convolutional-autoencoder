@@ -4,7 +4,7 @@ Models
 import logging
 
 from keras.layers import (Input, Conv2D, MaxPooling2D, UpSampling2D, Flatten,
-                          Dense, Conv2DTranspose)
+                          Dense, Conv2DTranspose, Dropout)
 from keras.models import Model
 
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
-            sup_weight=0., transpose=True):
+            sup_weight, transpose, sup_layers):
     input_img = Input(shape=(img_width, img_height, 1))
     x = input_img
     for f, d in zip(filter_counts, downsampling):
@@ -31,6 +31,9 @@ def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
     decoded = Conv2D(1, filter_size, activation='sigmoid', padding='same')(x)
 
     z = Flatten()(encoded)
+    for sup_layer in sup_layers:
+        z = Dense(sup_layer)(z)
+        z = Dropout(0.5)(z)
     z = Dense(1, activation='sigmoid')(z)
 
     if sup_weight > 0:
@@ -45,5 +48,5 @@ def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    model = get_cae(256, 256, (8, 8, 8), (3, 3), (2, 2, 2), sup_weight=1.)
+    model = get_cae(256, 256, (8, 8, 8), (3, 3), (2, 2, 2), 1., False, [64])
     model.summary()
