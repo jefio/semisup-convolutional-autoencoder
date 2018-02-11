@@ -50,8 +50,8 @@ class FitPlotBase(object):
         history = self.model.fit_generator(
             self.dataset['train_generator'],
             validation_data=self.dataset['validation_generator'],
-            # epochs=50)
-            epochs=2, steps_per_epoch=2, validation_steps=2)
+            epochs=50)
+            # epochs=2, steps_per_epoch=2, validation_steps=2)
         self._plot_loss(history.history)
 
 
