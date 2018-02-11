@@ -11,6 +11,28 @@ from keras.models import Model
 logger = logging.getLogger(__name__)
 
 
+def get_convnet(img_width, img_height, filter_counts, filter_size, downsampling,
+                sup_layers):
+    input_img = Input(shape=(img_width, img_height, 1))
+    x = input_img
+    for f, d in zip(filter_counts, downsampling):
+        x = Conv2D(f, filter_size, activation='relu', padding='same')(x)
+        x = MaxPooling2D((d, d), padding='same')(x)
+
+    encoded = x
+
+    z = Flatten()(encoded)
+    for sup_layer in sup_layers:
+        z = Dense(sup_layer)(z)
+        z = Dropout(0.5)(z)
+    z = Dense(1, activation='sigmoid')(z)
+
+    model = Model(input_img, z)
+    model.compile(optimizer='rmsprop', loss='binary_crossentropy',
+                  metrics=['accuracy'])
+    return model
+
+
 def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
             sup_weight, transpose, sup_layers):
     input_img = Input(shape=(img_width, img_height, 1))
@@ -48,5 +70,7 @@ def get_cae(img_width, img_height, filter_counts, filter_size, downsampling,
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
+    model = get_convnet(256, 256, (8, 8, 8), (3, 3), (2, 2, 2), [64])
+    model.summary()
     model = get_cae(256, 256, (8, 8, 8), (3, 3), (2, 2, 2), 1., False, [64])
     model.summary()
