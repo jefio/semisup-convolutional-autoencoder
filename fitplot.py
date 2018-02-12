@@ -11,6 +11,7 @@ import pandas as pd
 from models import get_cae
 from data import get_dataset
 from keras.utils import plot_model
+from keras.callbacks import EarlyStopping
 
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,7 @@ class FitPlotBase(object):
         history = self.model.fit_generator(
             self.dataset['train_generator'],
             validation_data=self.dataset['validation_generator'],
+            callbacks=[EarlyStopping()],
             epochs=50)
             # epochs=2, steps_per_epoch=2, validation_steps=2)
         self._plot_loss(history.history)

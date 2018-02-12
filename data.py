@@ -10,7 +10,8 @@ def get_dataset(img_width, img_height, class_mode):
 
     train_data_dir = os.path.expanduser('~/data/train')
     validation_data_dir = os.path.expanduser('~/data/validation')
-    batch_size = 256
+    # 256 memory error
+    batch_size = 32
 
     train_datagen = ImageDataGenerator(rescale=1. / 255)
     test_datagen = ImageDataGenerator(rescale=1. / 255)

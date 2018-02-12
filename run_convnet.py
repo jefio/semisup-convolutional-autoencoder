@@ -20,11 +20,11 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-e', '--exp-name', type=str, default='A')
-    parser.add_argument('-fc', '--filter-counts', type=int, nargs='+', default=[8, 8, 8])
+    parser.add_argument('-fc', '--filter-counts', type=int, nargs='+', default=[32, 32, 64])
     parser.add_argument('-fs', '--filter-size', type=int, nargs='+', default=[3, 3])
     parser.add_argument('-d', '--downsampling', type=int, nargs='+', default=[2, 2, 2])
     parser.add_argument('-i', '--img-side', type=int, default=256)
-    parser.add_argument('-sl', '--sup-layers', type=int, nargs='+', default=[64])
+    parser.add_argument('-sl', '--sup-layers', type=int, nargs='+', default=[16])
     args = parser.parse_args()
 
     filename = os.path.expanduser("~/plot_cae/{}_config.json".format(
